@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071018">
+<meta name="description" content="Aurora Borealis – Polarlichtvorhersage, Sonnenaktivität und Sichtbarkeit für Home Assistant.">
+<title>Aurora Borealis · Polarlichter voraussehen</title>
+<link rel="icon" href="https://thedaimos.github.io/project-hub/assets/project-icons.svg">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#04080d;--bg2:#07111a;--panel:#09151d;--panel2:#0c1d27;
+  --text:#edf7fa;--muted:#91a8b4;--line:#163542;--cyan:#43dff5;
+  --green:#55f0a9;--green2:#16b879;--violet:#ad7cff;--blue:#48a8ff;
+  --gold:#d9aa57;--gold2:#f2d69a;--max:1220px;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:78px}
+body{margin:0;min-height:100vh;color:var(--text);background:
+  radial-gradient(circle at 18% -8%,rgba(72,168,255,.13),transparent 30%),
+  radial-gradient(circle at 76% 8%,rgba(85,240,169,.09),transparent 30%),
+  radial-gradient(circle at 88% 28%,rgba(173,124,255,.08),transparent 26%),
+  linear-gradient(180deg,#071019 0%,#04080d 58%,#020406 100%);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.20;background:
+  linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 88%)}
+a{color:inherit}.shell{width:min(var(--max),calc(100% - 38px));margin-inline:auto}
+.topbar{position:sticky;top:0;z-index:30;background:rgba(4,8,13,.84);border-bottom:1px solid rgba(217,170,87,.15);backdrop-filter:blur(16px) saturate(1.16)}
+.topbar__inner{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:22px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:900;letter-spacing:.015em}
+.brandmark{width:38px;height:38px;background-image:url("https://thedaimos.github.io/project-hub/assets/project-icons.svg");background-repeat:no-repeat;background-size:100% 600%;background-position:0 40%;filter:drop-shadow(0 0 10px rgba(85,240,169,.16))}
+.brand span{background:linear-gradient(90deg,#efffff,#6ee9ff 44%,#72f0bb 72%,#d9c6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{display:flex;gap:22px;color:#a8b5bd;font-size:.91rem}nav a{text-decoration:none}nav a:hover{color:#d9f7ff}
+main{padding:34px 0 70px}
+.frame{position:relative;padding:2px;border-radius:28px;background:linear-gradient(135deg,#523016 0%,#edcf92 12%,#8b5929 28%,#3f2b19 42%,#d6a655 59%,#f2dfb0 72%,#805128 88%,#d3aa63 100%);box-shadow:0 0 0 1px rgba(46,28,14,.95),0 0 0 5px rgba(104,68,31,.21),0 28px 78px rgba(0,0,0,.5)}
+.frame:before{content:"";position:absolute;inset:9px;border-radius:20px;border:1px solid rgba(255,228,171,.16);pointer-events:none;z-index:3;box-shadow:inset 0 0 24px rgba(0,0,0,.45)}
+.surface{position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(145deg,rgba(9,19,27,.995),rgba(4,8,12,.998) 67%,rgba(5,10,15,.998))}
+.hero{display:grid;grid-template-columns:.95fr 1.05fr;gap:42px;align-items:center;padding:54px 46px 46px;border-bottom:1px solid rgba(217,170,87,.14)}
+.sky{position:relative;min-height:420px;border-radius:22px;border:1px solid rgba(67,223,245,.20);background:
+  radial-gradient(circle at 50% 70%,rgba(43,95,134,.28),transparent 31%),
+  radial-gradient(circle at 45% 48%,rgba(85,240,169,.16),transparent 38%),
+  linear-gradient(180deg,#07131d,#03070b 82%);overflow:hidden;box-shadow:inset 0 0 50px rgba(0,0,0,.45)}
+.stars{position:absolute;inset:0;background-image:
+  radial-gradient(circle,#fff 0 1px,transparent 1.3px),
+  radial-gradient(circle,#9be9ff 0 1px,transparent 1.4px),
+  radial-gradient(circle,#fff 0 1px,transparent 1.2px);
+  background-size:83px 83px,127px 127px,173px 173px;
+  background-position:12px 18px,44px 64px,91px 33px;opacity:.48}
+.aurora{position:absolute;left:-8%;right:-8%;top:16%;height:210px;filter:blur(9px);opacity:.86;background:
+  radial-gradient(ellipse at 18% 38%,rgba(85,240,169,.62),transparent 34%),
+  radial-gradient(ellipse at 42% 54%,rgba(67,223,245,.55),transparent 30%),
+  radial-gradient(ellipse at 68% 31%,rgba(173,124,255,.48),transparent 31%),
+  radial-gradient(ellipse at 86% 49%,rgba(85,240,169,.52),transparent 28%);
+  transform:skewY(-7deg) rotate(-2deg)}
+.aurora:after{content:"";position:absolute;inset:20px 6% 0;background:linear-gradient(90deg,transparent,rgba(96,255,185,.54),rgba(82,214,255,.48),rgba(187,130,255,.38),rgba(88,255,185,.45),transparent);clip-path:polygon(0 42%,14% 19%,31% 44%,48% 12%,68% 38%,83% 16%,100% 45%,100% 65%,84% 43%,66% 69%,48% 42%,31% 73%,14% 51%,0 72%);filter:blur(10px)}
+.globe{position:absolute;width:255px;height:255px;border-radius:50%;left:50%;bottom:-76px;transform:translateX(-50%);background:
+  radial-gradient(circle at 38% 30%,rgba(63,168,255,.42),transparent 26%),
+  radial-gradient(circle at 60% 42%,rgba(35,96,140,.42),transparent 38%),
+  radial-gradient(circle at 50% 50%,#0d3550 0,#071b2a 57%,#03090e 73%);
+  border:1px solid rgba(109,220,255,.34);box-shadow:0 0 30px rgba(59,174,229,.24),inset -25px -25px 40px rgba(0,0,0,.46)}
+.globe:before{content:"";position:absolute;inset:18%;border-radius:46% 54% 58% 42%;border:1px solid rgba(85,240,169,.34);transform:rotate(19deg);box-shadow:46px -19px 0 -42px rgba(85,240,169,.7),-35px 23px 0 -32px rgba(67,223,245,.46)}
+.hud{position:absolute;left:18px;bottom:18px;padding:11px 13px;border:1px solid rgba(67,223,245,.24);border-radius:12px;background:rgba(2,8,12,.7);font:11px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;color:#a7dbea}
+.hud .live{color:var(--green)}
+.logo{width:116px;height:116px;margin-bottom:18px;background-image:url("https://thedaimos.github.io/project-hub/assets/project-icons.svg");background-repeat:no-repeat;background-size:100% 600%;background-position:0 40%;filter:drop-shadow(0 16px 26px rgba(0,0,0,.42))}
+.eyebrow{font:900 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.18em;color:#78eaff}
+.hero h1{margin:11px 0 10px;font-size:clamp(2.7rem,5.1vw,4.9rem);line-height:.95;letter-spacing:-.05em;background:linear-gradient(90deg,#f5ffff 0%,#8ff6ff 35%,#62f0b1 67%,#c7a7ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.claim{margin:0 0 16px;font-size:clamp(1.1rem,2vw,1.46rem);font-weight:850;color:#dcebf0}
+.lead{margin:0;max-width:720px;color:#a8bac4;font-size:1.02rem;line-height:1.75}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.badge{padding:7px 10px;border-radius:999px;border:1px solid rgba(67,223,245,.23);background:rgba(8,25,35,.68);font:800 11px/1 ui-monospace,monospace;color:#c8effa}.badge.green{border-color:rgba(85,240,169,.32);color:#c2f8d8}.badge.violet{border-color:rgba(173,124,255,.34);color:#e0ccff}.badge.gold{border-color:rgba(217,170,87,.36);color:#f1d79d}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 15px;border-radius:11px;text-decoration:none;font-weight:850;font-size:.86rem;border:1px solid rgba(217,170,87,.45);color:#f0d49a;background:linear-gradient(180deg,rgba(78,58,34,.72),rgba(32,25,19,.9))}.btn.primary{border-color:rgba(67,223,245,.54);color:#eaffff;background:linear-gradient(180deg,rgba(17,83,97,.88),rgba(5,35,45,.96))}.btn:hover{transform:translateY(-1px)}
+.section{padding:42px 46px}.section+.section{border-top:1px solid rgba(217,170,87,.12)}.section-label{margin:0 0 8px;font:900 10px/1 ui-monospace,monospace;text-transform:uppercase;letter-spacing:.19em;color:#d9b874}.section h2{margin:0 0 10px;font-size:clamp(1.6rem,3vw,2.25rem);letter-spacing:-.025em}.section-intro{max-width:850px;margin:0 0 24px;color:#97aab6;line-height:1.72}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{padding:19px;border-radius:17px;border:1px solid rgba(34,75,96,.68);background:linear-gradient(155deg,rgba(11,25,35,.96),rgba(5,12,17,.99));box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}.card h3{margin:0 0 8px;color:#e7f8fc;font-size:1.06rem}.card p{margin:0;color:#91a5b2;line-height:1.62;font-size:.92rem}.metric{font:900 1.55rem/1 ui-monospace,monospace;margin-bottom:9px}.metric.green{color:var(--green)}.metric.cyan{color:var(--cyan)}.metric.violet{color:#c4a2ff}.metric.gold{color:#edcd8a}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.stage{min-height:130px;padding:15px 13px;border-radius:15px;border:1px solid rgba(67,223,245,.18);background:linear-gradient(165deg,rgba(10,27,38,.95),rgba(5,12,17,.98));position:relative}.stage:not(:last-child):after{content:"›";position:absolute;right:-9px;top:47%;z-index:3;color:#60e5d8;font-size:20px}.num{display:block;color:#597b8d;font:900 10px/1 ui-monospace,monospace;margin-bottom:14px}.stage b{display:block;color:#e8f7fd;margin-bottom:7px}.stage small{color:#849aa7;line-height:1.45}.stage.green{border-color:rgba(85,240,169,.28)}.stage.violet{border-color:rgba(173,124,255,.26)}
+.feature{display:grid;grid-template-columns:1fr 1fr;gap:16px}.feature-panel{padding:22px;border-radius:18px;border:1px solid rgba(67,223,245,.18);background:radial-gradient(circle at 85% 10%,rgba(85,240,169,.08),transparent 28%),linear-gradient(150deg,#0a1821,#050b10)}.feature-panel h3{margin:0 0 8px}.feature-panel p{margin:0;color:#91a5b2;line-height:1.67}
+.footer{padding:22px 46px 24px;border-top:1px solid rgba(217,170,87,.15);display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;color:#788b98;font-size:.78rem}
+.footer-left{display:flex;align-items:center;gap:13px;min-width:0}.footer-logo{width:78px;height:78px;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 8px rgba(211,174,96,.10))}.footer-copy{min-width:0;line-height:1.35;display:flex;flex-direction:column;justify-content:center}.footer-copy strong{display:block;color:#d9c18b;letter-spacing:.025em}.footer-sub{color:#858f9c;font-size:.92rem}.footer-links{display:flex;align-items:center;gap:8px;white-space:nowrap;margin-top:5px;font-size:.84rem}.footer a{text-decoration:none;color:#adc3cf}.footer a:hover{color:#f0d198}.footer-right{display:flex;align-items:center;justify-content:flex-end;min-width:0}.footer-ornament{width:min(360px,34vw);height:auto;flex:0 0 auto;object-fit:contain;opacity:.88;filter:drop-shadow(0 0 7px rgba(211,174,96,.08))}
+@media(max-width:980px){.hero{grid-template-columns:1fr}.flow{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr 1fr}.feature{grid-template-columns:1fr}}
+@media(max-width:620px){.shell{width:min(var(--max),calc(100% - 20px))}.topbar__inner{min-height:58px}.topbar nav a:nth-child(2){display:none}.hero,.section{padding:30px 20px}.hero h1{font-size:2.7rem}.logo{width:94px;height:94px}.flow,.grid{grid-template-columns:1fr}.stage:not(:last-child):after{content:"↓";right:auto;left:50%;top:auto;bottom:-18px}.footer{padding:18px 20px 20px;flex-direction:column;align-items:flex-start;gap:18px}.footer-logo{width:68px;height:68px}.footer-right{width:100%;justify-content:flex-end}.footer-ornament{width:min(230px,58vw)}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="shell topbar__inner"><a class="brand" href="#top"><span class="brandmark" aria-hidden="true"></span><span>Aurora Borealis</span></a><nav><a href="#idee">Idee</a><a href="#daten">Daten</a><a href="#sichtbarkeit">Sichtbarkeit</a><a href="https://thedaimos.github.io/project-hub/" target="_blank" rel="noopener noreferrer">Meine Projekte</a></nav></div></header>
+<main id="top"><div class="shell"><div class="frame"><div class="surface">
+<section class="hero">
+  <div class="sky" aria-label="Stilisierte Aurora über einer Erde">
+    <div class="stars"></div><div class="aurora"></div><div class="globe"></div>
+    <div class="hud"><span class="live">● LIVE DATA</span><br>OVATION · Kp · Solar Wind<br>Clouds · Sun · Moon · Location</div>
+  </div>
+  <div>
+    <div class="logo" role="img" aria-label="Aurora Borealis Logo"></div>
+    <div class="eyebrow">Aurora forecasting · Home Assistant</div>
+    <h1>Aurora Borealis</h1>
+    <p class="claim">Polarlichter voraussehen · Wissen, wann der Himmel leuchtet!</p>
+    <p class="lead">Aurora Borealis verbindet Weltraumwetter, lokale Wetterbedingungen und Standortdaten zu einer verständlichen Einschätzung der Polarlichtchancen. Statt nur einen einzelnen Index zu zeigen, bringt die Anwendung Sonnenaktivität, OVATION, Bewölkung, Sonne, Mond und den eigenen Beobachtungsort in einen gemeinsamen Kontext.</p>
+    <div class="badges"><span class="badge green">OVATION</span><span class="badge">NOAA SWPC</span><span class="badge violet">3D Earth</span><span class="badge gold">Home Assistant</span></div>
+    <div class="actions"><a class="btn primary" href="https://github.com/TheDaimos/aurora-borealis-pub" target="_blank" rel="noopener noreferrer">GitHub · Projektseite</a><a class="btn" href="#sichtbarkeit">Sichtbarkeit verstehen</a><a class="btn" href="https://thedaimos.github.io/project-hub/" target="_blank" rel="noopener noreferrer">Meine Projekte</a></div>
+  </div>
+</section>
+
+<section class="section" id="idee">
+  <div class="section-label">Idee</div>
+  <h2>Aus Weltraumwetter wird eine Beobachtungsentscheidung.</h2>
+  <p class="section-intro">Eine hohe geomagnetische Aktivität allein bedeutet noch nicht, dass ein Polarlicht am eigenen Standort sichtbar sein wird. Aurora Borealis betrachtet deshalb mehrere Ebenen gemeinsam – vom Sonnenwind bis zur lokalen Wolkendecke.</p>
+  <div class="grid">
+    <article class="card"><div class="metric green">01</div><h3>Weltraumwetter</h3><p>NOAA-SWPC-Daten liefern die physikalische Grundlage: Aktivität, Kp, propagierter Sonnenwind und OVATION-Aurora.</p></article>
+    <article class="card"><div class="metric cyan">02</div><h3>Lokale Sichtbarkeit</h3><p>Standort, Bewölkung, Sonnenstand und weitere Beobachtungsbedingungen ergänzen die reine Weltraumwetterlage.</p></article>
+    <article class="card"><div class="metric violet">03</div><h3>Visueller Kontext</h3><p>Eine persistente 3D-Earth-Darstellung macht den globalen Aurora-Kontext räumlich erfassbar, ohne die Hauptansicht ständig neu aufzubauen.</p></article>
+  </div>
+</section>
+
+<section class="section" id="daten">
+  <div class="section-label">Datenfluss</div>
+  <h2>Mehrere Signale. Eine gemeinsame Einschätzung.</h2>
+  <p class="section-intro">Die Anwendung führt externe Weltraumwetterdaten und lokale Home-Assistant-Kontexte zusammen. Der Globe verwendet dabei denselben OVATION-Datensatz wie die Hauptansicht statt einen zweiten, unabhängigen Datenstrom aufzubauen.</p>
+  <div class="flow">
+    <article class="stage green"><span class="num">01</span><b>NOAA SWPC</b><small>Kp, Sonnenwind und OVATION bilden die Weltraumwetterbasis.</small></article>
+    <article class="stage"><span class="num">02</span><b>Standort</b><small>Home und weitere Beobachtungsorte werden getrennt betrachtet.</small></article>
+    <article class="stage"><span class="num">03</span><b>Wetter</b><small>Aktuelle Bewölkung, Verlauf und Prognose fließen in den Beobachtungskontext ein.</small></article>
+    <article class="stage violet"><span class="num">04</span><b>Sonne & Mond</b><small>Helligkeit und Himmelsbedingungen helfen, die reale Sichtbarkeit einzuordnen.</small></article>
+    <article class="stage green"><span class="num">05</span><b>Aurora View</b><small>Die Signale werden in einer gemeinsamen, verständlichen Ansicht zusammengeführt.</small></article>
+  </div>
+</section>
+
+<section class="section" id="sichtbarkeit">
+  <div class="section-label">Beobachtung</div>
+  <h2>Nicht nur: „Ist Aktivität da?“ – sondern: „Kann ich sie sehen?“</h2>
+  <p class="section-intro">Aurora Borealis ist auf die praktische Himmelsbeobachtung ausgerichtet. Das Ziel ist nicht die maximale Zahl an Rohwerten, sondern eine Oberfläche, die relevante Zusammenhänge schnell erfassbar macht.</p>
+  <div class="feature">
+    <article class="feature-panel"><h3>Lokaler Sichtbarkeitsindex</h3><p>Weltraumwetter und lokale Bedingungen werden so aufbereitet, dass die Beobachtungschance am gewählten Ort verständlich eingeordnet werden kann.</p></article>
+    <article class="feature-panel"><h3>Bewölkungs-Timeline</h3><p>Vergangenheit, Jetzt und Prognose können gemeinsam betrachtet werden – wichtig, wenn sich ein mögliches Beobachtungsfenster erst später öffnet.</p></article>
+    <article class="feature-panel"><h3>Persistente 3D Earth</h3><p>Der Globe bleibt als langlebiger iFrame-/Shadow-Host bestehen. Soft-Minimize und UI-Wechsel sollen die Earth-Darstellung nicht unnötig neu initialisieren.</p></article>
+    <article class="feature-panel"><h3>Alarmierung & Kompass</h3><p>Home-Assistant-Integration, Benachrichtigungen und Richtungskontext machen aus Daten eine nutzbare Beobachtungsunterstützung.</p></article>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Öffentlicher Projektzugang</div>
+  <h2>Projektvorstellung bewusst getrennt vom privaten Entwicklungsstand.</h2>
+  <p class="section-intro">Dieses öffentliche Repository dient dem Projektauftritt und der Dokumentation. Der eigentliche Entwicklungsstand bleibt separat im privaten DEV-Repository. Dadurch können Idee, Architektur und Funktionen öffentlich vorgestellt werden, ohne interne Entwicklungs- oder Laufzeitdaten offenzulegen.</p>
+  <div class="actions"><a class="btn primary" href="https://github.com/TheDaimos/aurora-borealis-pub" target="_blank" rel="noopener noreferrer">aurora-borealis-pub auf GitHub</a></div>
+</section>
+
+<footer class="footer">
+  <div class="footer-left">
+    <img class="footer-logo" src="https://thedaimos.github.io/weather-router-pub/assets/project-page/ck-signature-logo.svg" alt="" aria-hidden="true">
+    <div class="footer-copy">
+      <strong>C.K. – Eine Idee weiter gedacht.</strong>
+      <div class="footer-sub">Aurora Borealis · öffentliche Projektvorstellung</div>
+      <div class="footer-links"><a href="https://thedaimos.github.io/project-hub/" target="_blank" rel="noopener noreferrer">Meine Projekte</a><span>·</span><a href="https://github.com/TheDaimos/aurora-borealis-pub" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+    </div>
+  </div>
+  <div class="footer-right"><div style="width:min(360px,34vw);height:34px;display:flex;align-items:center;gap:10px;opacity:.9"><span style="height:1px;flex:1;background:linear-gradient(90deg,transparent,#c99a51,#f0d59a)"></span><span style="width:10px;height:10px;transform:rotate(45deg);border:1px solid #d8b46b;background:#2b1d0f;box-shadow:0 0 0 2px #071018"></span><span style="height:1px;flex:1;background:linear-gradient(90deg,#f0d59a,#c99a51,transparent)"></span></div></div>
+</footer>
+</div></div></div></main>
+</body>
+</html>
